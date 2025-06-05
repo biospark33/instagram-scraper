@@ -1,0 +1,45 @@
+name: Instagram Comment Scraper
+
+on:
+  schedule:
+    # PEAK HOURS - Every 2 minutes (convert your times to UTC!)
+    # 6-9 AM ET = 10-13 UTC (if EST) or 11-14 UTC (if EDT)
+    - cron: '*/2 11-13 * * 1-5'     # Morning peak (EDT)
+    - cron: '*/2 16 * * 1-5'        # Lunch peak 12-1 PM ET
+    - cron: '*/2 20-21 * * 1-5'     # Evening peak 4-5 PM ET
+    
+    # BUSINESS HOURS - Every 5 minutes  
+    - cron: '*/5 14-15,17-19 * * 1-5'  # Business hour gaps
+    
+    # EVENING - Every 15 minutes
+    - cron: '*/15 22-03 * * *'      # Evening 6 PM - 11 PM ET
+    
+    # WEEKEND - Reduced frequency
+    - cron: '*/10 16-22 * * 6'      # Saturday 12-6 PM ET
+    - cron: '*/30 18-24 * * 0'      # Sunday 2-8 PM ET
+
+  # Allow manual testing
+  workflow_dispatch:
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Get the code
+      uses: actions/checkout@v3
+      
+    - name: Setup Node.js
+      uses: actions/setup-node@v3
+      with:
+        node-version: '18'
+        
+    - name: Install required packages
+      run: npm install
+      
+    - name: Run the scraper
+      env:
+        SCRAPINGBEE_API_KEY: ${{ secrets.SCRAPINGBEE_API_KEY }}
+        N8N_WEBHOOK_URL: ${{ secrets.N8N_WEBHOOK_URL }}
+        INSTAGRAM_POSTS: ${{ secrets.INSTAGRAM_POSTS }}
+      run: node instagram-scraper.js
