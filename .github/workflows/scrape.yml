@@ -2,23 +2,41 @@ name: Instagram Comment Scraper
 
 on:
   schedule:
-    # PEAK HOURS - Every 2 minutes during US business peak times
-    # Times are in UTC, adjust for your timezone
-    - cron: '*/2 11-14 * * 1-5'     # 6-9 AM ET (peak morning)
-    - cron: '*/2 16-17 * * 1-5'     # 12-1 PM ET (lunch peak)
-    - cron: '*/2 20-22 * * 1-5'     # 4-6 PM ET (evening peak)
+    # PEAK HOURS - Every 2 minutes (1-2 minute response time)
+    # Morning Peak: 6-9 AM ET (11-14 UTC)
+    - cron: '*/2 11-14 * * 1-5'
+    # Lunch Peak: 12-1 PM ET (17 UTC) 
+    - cron: '*/2 17 * * 1-5'
+    # Evening Peak: 4-6 PM ET (21-23 UTC)
+    - cron: '*/2 21-23 * * 1-5'
     
-    # BUSINESS HOURS - Every 5 minutes during gaps
-    - cron: '*/5 14-16,17-20 * * 1-5'  # Business hour gaps
+    # BUSINESS HOURS - Every 5 minutes
+    # Mid-morning: 9-12 PM ET (14-17 UTC)
+    - cron: '*/5 14-16 * * 1-5'
+    # Afternoon: 1-4 PM ET (18-21 UTC)
+    - cron: '*/5 18-20 * * 1-5'
     
-    # EVENING - Every 15 minutes
-    - cron: '*/15 23-02 * * *'      # 6-9 PM ET evening
+    # EVENING - Every 10 minutes
+    # 6-9 PM ET (23-02 UTC next day)
+    - cron: '*/10 23-59 * * 1-5'
+    - cron: '*/10 0-2 * * 2-6'
     
-    # WEEKEND - Reduced frequency
-    - cron: '*/10 16-22 * * 6'      # Saturday afternoon
-    - cron: '*/30 18-00 * * 0'      # Sunday evening
+    # NIGHT - Every 30 minutes
+    # 9 PM - 6 AM ET (02-11 UTC)
+    - cron: '*/30 3-10 * * *'
+    
+    # WEEKEND OPTIMIZED
+    # Saturday: Every 5 minutes during peak (12-6 PM ET = 17-23 UTC)
+    - cron: '*/5 17-23 * * 6'
+    # Saturday evening: Every 15 minutes
+    - cron: '*/15 0-16,23-59 * * 6'
+    # Sunday: Every 15 minutes afternoon (2-8 PM ET = 19-01 UTC)
+    - cron: '*/15 19-59 * * 0'
+    - cron: '*/15 0-1 * * 1'
+    # Sunday other times: Every 30 minutes
+    - cron: '*/30 2-18 * * 0'
 
-  # Allow manual testing
+  # Manual trigger for testing
   workflow_dispatch:
 
 jobs:
